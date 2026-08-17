@@ -7,8 +7,12 @@
   "bin": {
     "chrome-bookmarks-mcp": "dist/run-stdio.js"
   },
-  "files": ["dist"],
-  "engines": { "node": ">=22.5" },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.5"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx watch src/run-stdio.ts",
@@ -19,7 +23,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.29.0",
+    "@modelcontextprotocol/sdk": "1.30.0",
     "better-sqlite3": "^12.2.0",
     "p-limit": "^7.1.1",
     "ws": "^8.18.3",
