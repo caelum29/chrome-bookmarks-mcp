@@ -19,3 +19,9 @@ pnpm workspace monorepo. Public repo — no personal data, no real bookmark dump
 ## Conventions
 TypeScript strict, `verbatimModuleSyntax`, no `any` on public surfaces, vitest under `test/`,
 conventional commits, English everywhere in the repo.
+
+## AI attribution (Git AI)
+This repo tracks AI-written code with [Git AI](https://usegitai.com) — line-level attribution in
+git notes (`refs/notes/ai`), written automatically by agent hooks on commit. Nothing to do per
+commit; `git ai stats` shows the human/AI split, `git log --show-notes=ai` shows raw notes.
+`.github/workflows/git-ai.yml` keeps notes accurate through squash/rebase merges on GitHub.

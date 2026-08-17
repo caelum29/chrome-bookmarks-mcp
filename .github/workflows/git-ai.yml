@@ -1,0 +1,28 @@
+# Git AI (usegitai.com): preserve line-level AI attribution notes (refs/notes/ai)
+# through GitHub "Squash and merge" / "Rebase and merge", which the server does
+# without git-ai. Local commits carry the notes already; this rewrites them for
+# merged PRs. See https://usegitai.com/docs/guides/ci-workflows
+name: Git AI
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  git-ai:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Install git-ai
+        run: |
+          curl -fsSL https://usegitai.com/install.sh | bash
+          echo "$HOME/.git-ai/bin" >> $GITHUB_PATH
+      - name: Run git-ai
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git ai ci github run

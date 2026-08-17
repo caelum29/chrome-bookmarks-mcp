@@ -33,6 +33,11 @@ pnpm typecheck && pnpm test && pnpm build
 Load the extension: `chrome://extensions` → Developer mode → Load unpacked →
 `packages/extension/dist`.
 
+## AI attribution
+
+AI-generated lines are tracked with [Git AI](https://usegitai.com) via git notes
+(`git log --show-notes=ai`, `git ai stats`). No workflow changes required.
+
 ## License
 
 MIT
