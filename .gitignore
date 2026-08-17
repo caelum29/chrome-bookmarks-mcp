@@ -1,0 +1,26 @@
+# deps & build
+node_modules/
+dist/
+build/
+*.mcpb
+*.tgz
+
+# runtime data — snapshots live in ~/.cache, but keep any local dumps out
+data/
+*.sqlite
+*.sqlite-journal
+
+# local dev only — personal Claude Code config
+.claude/
+.mcp.json
+
+# internal design/research notes kept local (public repo)
+docs/dev/
+
+# editor / OS
+.DS_Store
+.idea/*
+!.idea/.gitignore
+
+# logs
+*.log

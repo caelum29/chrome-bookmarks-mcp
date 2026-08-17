@@ -1,0 +1,34 @@
+{
+  "name": "@chrome-bookmarks-mcp/server",
+  "version": "0.1.0",
+  "description": "MCP server for agentic Chrome bookmark management (stdio).",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "chrome-bookmarks-mcp": "dist/run-stdio.js"
+  },
+  "files": ["dist"],
+  "engines": { "node": ">=22.5" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/run-stdio.ts",
+    "start": "node dist/run-stdio.js",
+    "inspect": "tsc -p tsconfig.json && mcp-inspector node dist/run-stdio.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "better-sqlite3": "^12.2.0",
+    "p-limit": "^7.1.1",
+    "ws": "^8.18.3",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "0.22.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/ws": "^8.18.1",
+    "tsx": "4.22.4"
+  }
+}

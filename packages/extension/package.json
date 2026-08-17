@@ -1,0 +1,16 @@
+{
+  "name": "@chrome-bookmarks-mcp/extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MV3 companion extension bridging chrome.bookmarks to the MCP server over a localhost WebSocket.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.30",
+    "esbuild": "^0.25.9"
+  }
+}
