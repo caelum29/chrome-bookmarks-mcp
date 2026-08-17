@@ -1,6 +1,6 @@
 # chrome-bookmarks-mcp — dev convenience targets.
 .DEFAULT_GOAL := help
-.PHONY: help build typecheck test ext
+.PHONY: help build typecheck test verify ext
 
 help: ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -14,6 +14,9 @@ typecheck: ## Type-check all packages
 
 test: ## Run all tests
 	pnpm test
+
+verify: ## typecheck + lint + test — the only proof of "done"
+	pnpm verify
 
 ext: ## Build the unpacked extension → packages/extension/dist
 	pnpm --filter @chrome-bookmarks-mcp/extension build

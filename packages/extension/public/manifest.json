@@ -3,6 +3,6 @@
   "name": "Chrome Bookmarks MCP Bridge",
   "version": "0.1.0",
   "description": "Bridges chrome.bookmarks to the local chrome-bookmarks-mcp server over a localhost WebSocket.",
-  "permissions": ["bookmarks", "alarms"],
+  "permissions": ["bookmarks", "alarms", "storage"],
   "background": { "service_worker": "background.js", "type": "module" }
 }

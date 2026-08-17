@@ -10,17 +10,18 @@ data/
 *.sqlite
 *.sqlite-journal
 
-# local dev only — personal Claude Code config
-.claude/
-.mcp.json
+# Claude Code harness: shared parts are committed, personal/session state is not
+.claude/settings.local.json
+.claude/.cc-writes/
+.claude/.verify-attempts
+.claude/worktrees/
 
 # internal design/research notes kept local (public repo)
 docs/dev/
 
 # editor / OS
 .DS_Store
-.idea/*
-!.idea/.gitignore
+.idea/
 
 # logs
 *.log

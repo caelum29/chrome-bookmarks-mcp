@@ -1,0 +1,91 @@
+{
+  "checksum": "synthetic",
+  "version": 1,
+  "roots": {
+    "bookmark_bar": {
+      "id": "1",
+      "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+      "name": "Bookmarks bar",
+      "type": "folder",
+      "date_added": "13350000000000000",
+      "date_modified": "13360000000000000",
+      "children": [
+        {
+          "id": "5",
+          "guid": "11111111-1111-4111-8111-111111111111",
+          "name": "Example",
+          "type": "url",
+          "url": "https://example.com/",
+          "date_added": "13350000001000000"
+        },
+        {
+          "id": "6",
+          "guid": "22222222-2222-4222-8222-222222222222",
+          "name": "Dev",
+          "type": "folder",
+          "date_added": "13350000002000000",
+          "children": [
+            {
+              "id": "7",
+              "guid": "33333333-3333-4333-8333-333333333333",
+              "name": "Node.js docs",
+              "type": "url",
+              "url": "https://nodejs.org/docs/",
+              "date_added": "13350000003000000"
+            },
+            {
+              "id": "8",
+              "guid": "44444444-4444-4444-8444-444444444444",
+              "name": "TypeScript",
+              "type": "url",
+              "url": "https://www.typescriptlang.org/",
+              "date_added": "13350000004000000"
+            },
+            {
+              "id": "9",
+              "guid": "55555555-5555-4555-8555-555555555555",
+              "name": "MCP",
+              "type": "folder",
+              "date_added": "13350000005000000",
+              "children": [
+                {
+                  "id": "10",
+                  "guid": "66666666-6666-4666-8666-666666666666",
+                  "name": "MCP spec",
+                  "type": "url",
+                  "url": "https://modelcontextprotocol.io/",
+                  "date_added": "13350000006000000"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "other": {
+      "id": "2",
+      "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+      "name": "Other bookmarks",
+      "type": "folder",
+      "date_added": "13350000000000000",
+      "children": [
+        {
+          "id": "11",
+          "guid": "77777777-7777-4777-8777-777777777777",
+          "name": "Example again",
+          "type": "url",
+          "url": "https://example.com/",
+          "date_added": "13350000007000000"
+        }
+      ]
+    },
+    "synced": {
+      "id": "3",
+      "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+      "name": "Mobile bookmarks",
+      "type": "folder",
+      "date_added": "13350000000000000",
+      "children": []
+    }
+  }
+}

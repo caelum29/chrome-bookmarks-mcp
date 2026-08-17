@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "chrome-bookmarks": {
+      "command": "node",
+      "args": ["packages/mcp-server/dist/run-stdio.js"],
+      "env": {
+        "BOOKMARKS_BROWSER": "chrome",
+        "BOOKMARKS_PROFILE": "Default"
+      }
+    }
+  }
+}
