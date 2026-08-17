@@ -7,9 +7,8 @@ import { loadConfig } from "./config.js";
 import { createLogger } from "./logging.js";
 import { createServer } from "./server.js";
 
-const log = createLogger(
-  (process.env.BOOKMARKS_LOG_LEVEL as "debug" | "info" | undefined) ?? "info",
-);
+const config = loadConfig();
+const log = createLogger(config.logLevel);
 
 process.on("unhandledRejection", (r) => log.error("unhandledRejection", { reason: String(r) }));
 process.on("uncaughtException", (e) => {
@@ -17,7 +16,6 @@ process.on("uncaughtException", (e) => {
   process.exit(1);
 });
 
-const config = loadConfig();
 // bridge failure to bind is not fatal: read tools still work from the Bookmarks file
 const bridge = await startWsBridge({
   port: config.wsPort,

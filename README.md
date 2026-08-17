@@ -20,7 +20,8 @@ Claude Desktop / Claude Code
 ```
 
 Writes go **only** through the extension (`chrome.bookmarks`); Chrome's `Bookmarks` file is never
-written. Reads use the extension when connected and fall back to parsing the `Bookmarks` file.
+written. Reads currently parse the `Bookmarks` file; live reads through the extension arrive with a
+later milestone.
 
 ## Tools
 
@@ -43,7 +44,7 @@ bookmarks bridge?"* → `bookmarks_status`. For live access load the extension: 
 Developer mode → Load unpacked → `packages/extension/dist`.
 
 Config (env): `BOOKMARKS_BROWSER` (`chrome`|`brave`|`edge`) · `BOOKMARKS_PROFILE` (`Default`) ·
-`BOOKMARKS_WS_PORT` (`48765`) · `BOOKMARKS_ENABLE_WRITE` · `BOOKMARKS_FILE` (override path) ·
+`BOOKMARKS_WS_PORT` (`48765`; the extension reads `chrome.storage.local.wsPort`, default 48765) · `BOOKMARKS_ENABLE_WRITE` · `BOOKMARKS_FILE` (override path) ·
 `BOOKMARKS_LOG_LEVEL`.
 
 ## Development

@@ -4,7 +4,7 @@
    `{ id, method: "<name>", params }` and its typed result. Keep params flat; the extension validates
    nothing beyond shape, so the server owns validation.
 2. **Server side** — `src/bridge/ws-bridge.ts`: no per-message code; `bridge.request(method, params)`
-   already correlates by `id` and times out (`BRIDGE_TIMEOUT_MS`). Callers live in tool deps
+   already correlates by `id`, validates the frame with `BridgeResponseSchema`, and times out (`config.bridgeTimeoutMs`, env `BOOKMARKS_BRIDGE_TIMEOUT_MS`). Add a zod schema for the result next to `PingResultSchema` and parse it at the call site. Callers live in tool deps
    (`deps.bridge`), never in handlers directly.
 3. **Extension side** — `packages/extension/src/background.ts`: add a `case "<name>"` in the dispatcher
    that calls `chrome.bookmarks.*` and returns a plain JSON result; errors → `{ error: { message } }`.

@@ -4,6 +4,8 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 export type Browser = "chrome" | "brave" | "edge";
+export type LogLevel = "debug" | "info" | "warn" | "error";
+const LOG_LEVELS: readonly LogLevel[] = ["debug", "info", "warn", "error"];
 
 const BASE_DIRS: Record<Browser, string> = {
   chrome: "Google/Chrome",
@@ -25,6 +27,7 @@ export interface Config {
   snapshotDir: string;
   /** How long a bridge request may wait for the extension. */
   bridgeTimeoutMs: number;
+  logLevel: LogLevel;
 }
 
 /** Root dir holding `Local State` and profile folders for a browser (macOS). */
@@ -62,6 +65,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, home = homedir(
       `BOOKMARKS_WS_PORT must be an integer in 1024..65535, got "${env.BOOKMARKS_WS_PORT}"`,
     );
   }
+  const bridgeTimeoutMs = Number(envStr(env.BOOKMARKS_BRIDGE_TIMEOUT_MS) ?? 5000);
+  if (!Number.isInteger(bridgeTimeoutMs) || bridgeTimeoutMs < 100) {
+    throw new Error(
+      `BOOKMARKS_BRIDGE_TIMEOUT_MS must be an integer ≥ 100, got "${env.BOOKMARKS_BRIDGE_TIMEOUT_MS}"`,
+    );
+  }
+  const logLevel = (envStr(env.BOOKMARKS_LOG_LEVEL) ?? "info") as LogLevel;
+  if (!LOG_LEVELS.includes(logLevel)) {
+    throw new Error(
+      `BOOKMARKS_LOG_LEVEL must be one of ${LOG_LEVELS.join(", ")}, got "${logLevel}"`,
+    );
+  }
   return {
     browser,
     profile,
@@ -71,6 +86,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, home = homedir(
       envStr(env.BOOKMARKS_FILE) ?? join(userDataDir(browser, home), profile, "Bookmarks"),
     snapshotDir:
       envStr(env.BOOKMARKS_SNAPSHOT_DIR) ?? join(home, ".cache/chrome-bookmarks-mcp/snapshots"),
-    bridgeTimeoutMs: Number(envStr(env.BOOKMARKS_BRIDGE_TIMEOUT_MS) ?? 5000),
+    bridgeTimeoutMs,
+    logLevel,
   };
 }

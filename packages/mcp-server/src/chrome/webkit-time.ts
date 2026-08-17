@@ -16,8 +16,3 @@ export function webkitToUnixMs(v: string | number | undefined | null): number {
   if (us <= EPOCH_DELTA_US) return 0;
   return Number((us - EPOCH_DELTA_US) / 1000n);
 }
-
-/** Convert Unix ms to a WebKit timestamp string (µs since 1601). */
-export function unixMsToWebkit(ms: number): string {
-  return (BigInt(Math.trunc(ms)) * 1000n + EPOCH_DELTA_US).toString();
-}

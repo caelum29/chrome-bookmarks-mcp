@@ -60,26 +60,43 @@
   "hooks": {
     "SessionStart": [
       {
-        "hooks": [{ "type": "command", "command": ".claude/hooks/session-context.sh" }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-context.sh"
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
-        "hooks": [{ "type": "command", "command": ".claude/hooks/guard-paths.sh" }]
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-paths.sh" }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/typecheck-affected.sh", "timeout": 90 }
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/typecheck-affected.sh",
+            "timeout": 90
+          }
         ]
       }
     ],
     "Stop": [
       {
-        "hooks": [{ "type": "command", "command": ".claude/hooks/verify-gate.sh", "timeout": 180 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/verify-gate.sh",
+            "timeout": 180
+          }
+        ]
       }
     ]
   }

@@ -47,9 +47,10 @@ describe("MCP wire", () => {
 
     const res = await client.callTool({ name: "bookmarks_status", arguments: {} });
     expect(res.isError).toBeFalsy();
+    // no bridge injected → server never bound a port → "unavailable", not "disconnected"
     expect(res.structuredContent).toMatchObject({
       bookmarksFileFound: false,
-      bridge: "disconnected",
+      bridge: "unavailable",
     });
     await close();
   });

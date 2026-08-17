@@ -1,3 +1,4 @@
+// Env → Config parsing: defaults, validation messages, the "false" trap, MCPB placeholders.
 import { describe, expect, it } from "vitest";
 import { loadConfig } from "../src/config.js";
 
@@ -28,6 +29,12 @@ describe("loadConfig", () => {
     );
     expect(loadConfig({ BOOKMARKS_ENABLE_WRITE: "1" }).writeEnabled).toBe(true);
     expect(loadConfig({ BOOKMARKS_ENABLE_WRITE: "true" }).writeEnabled).toBe(true);
+  });
+
+  it("validates log level and bridge timeout", () => {
+    expect(() => loadConfig({ BOOKMARKS_LOG_LEVEL: "loud" })).toThrow(/debug, info, warn, error/);
+    expect(loadConfig({ BOOKMARKS_LOG_LEVEL: "debug" }).logLevel).toBe("debug");
+    expect(() => loadConfig({ BOOKMARKS_BRIDGE_TIMEOUT_MS: "abc" })).toThrow(/≥ 100/);
   });
 
   it("treats un-interpolated MCPB placeholders as unset", () => {

@@ -22,7 +22,9 @@ export interface CreateServerOptions {
   tools?: readonly AnyToolDescriptor[];
 }
 
+// Used when the WS port could not be bound: tools see "not listening" and say so.
 const noBridge: BridgeClient = {
+  listening: false,
   connected: false,
   request: () => Promise.reject(new Error("bridge not started")),
 };

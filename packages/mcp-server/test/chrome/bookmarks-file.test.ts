@@ -1,3 +1,4 @@
+// Bookmarks-file adapter: WebKit time conversion, raw→domain mapping, typed file errors.
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -7,16 +8,15 @@ import {
   createBookmarksFileSource,
   parseBookmarksJson,
 } from "../../src/chrome/bookmarks-file.js";
-import { unixMsToWebkit, webkitToUnixMs } from "../../src/chrome/webkit-time.js";
+import { webkitToUnixMs } from "../../src/chrome/webkit-time.js";
 import { findNode, treeStats, walk } from "../../src/domain/tree.js";
 import { fixtureTree } from "../helpers/deps.js";
 
 describe("WebKit epoch conversion", () => {
-  it("round-trips and treats 0/invalid as 0", () => {
+  it("converts to Unix ms and treats 0/invalid as 0", () => {
     // 13350000000000000 µs since 1601 = 2024-01-… ; only stability matters here
     const ms = webkitToUnixMs("13350000000000000");
     expect(ms).toBeGreaterThan(1_700_000_000_000);
-    expect(unixMsToWebkit(ms)).toBe("13350000000000000");
     expect(webkitToUnixMs("0")).toBe(0);
     expect(webkitToUnixMs(undefined)).toBe(0);
     expect(webkitToUnixMs("garbage")).toBe(0);
@@ -46,6 +46,11 @@ describe("Bookmarks file parsing", () => {
     expect(t.roots.other.children).toEqual([]);
     expect(() => parseBookmarksJson("{not json")).toThrow(BookmarksFileError);
     expect(() => parseBookmarksJson("{}")).toThrow(/roots/);
+    expect(() =>
+      parseBookmarksJson(
+        JSON.stringify({ roots: { other: { id: 1, guid: "g", type: "folder" } } }),
+      ),
+    ).toThrow(/roots\.other\.id/);
   });
 
   it("file source reports existence and a not_found error with remediation", async () => {

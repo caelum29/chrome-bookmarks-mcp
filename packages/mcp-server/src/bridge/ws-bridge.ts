@@ -9,7 +9,7 @@ import {
   BridgeError,
   type BridgeMethod,
   type BridgeRequest,
-  type BridgeResponse,
+  BridgeResponseSchema,
 } from "./protocol.js";
 
 export interface WsBridgeOptions {
@@ -64,13 +64,20 @@ export function startWsBridge(opts: WsBridgeOptions): Promise<WsBridge> {
     socket = ws;
     log.info("bridge: extension connected");
     ws.on("message", (data) => {
-      let msg: BridgeResponse;
+      // boundary: the extension is another process — validate every frame
+      let parsed: unknown;
       try {
-        msg = JSON.parse(data.toString()) as BridgeResponse;
+        parsed = JSON.parse(data.toString());
       } catch {
         log.warn("bridge: non-JSON frame ignored");
         return;
       }
+      const check = BridgeResponseSchema.safeParse(parsed);
+      if (!check.success) {
+        log.warn("bridge: malformed frame ignored", { issues: check.error.issues.length });
+        return;
+      }
+      const msg = check.data;
       const p = pending.get(msg.id);
       if (!p) return;
       pending.delete(msg.id);
@@ -89,6 +96,7 @@ export function startWsBridge(opts: WsBridgeOptions): Promise<WsBridge> {
   });
 
   const bridge: WsBridge = {
+    listening: true,
     get connected() {
       return socket !== undefined && socket.readyState === socket.OPEN;
     },

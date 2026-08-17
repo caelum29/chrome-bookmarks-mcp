@@ -1,25 +1,42 @@
 // Read-only adapter for Chrome's `Bookmarks` JSON file — the fallback source when the bridge is
 // down. This module NEVER writes the file (ADR-0002). Converts WebKit time at the boundary.
 import { readFile, stat } from "node:fs/promises";
+import { z } from "zod";
 import { type BookmarkNode, type BookmarkTree, ROOT_KEYS, type RootKey } from "../domain/tree.js";
 import { webkitToUnixMs } from "./webkit-time.js";
 
-/** Raw node shape as Chrome writes it. Only the fields we read. */
+// Raw node shape as Chrome writes it — only the fields we read. Validated at the boundary because
+// the file is written by another program; unknown extra keys are allowed (Chrome adds meta_info etc.).
 interface RawNode {
   id: string;
   guid: string;
-  name: string;
+  name?: string;
   type: "url" | "folder";
   url?: string;
   date_added?: string;
   date_modified?: string;
   children?: RawNode[];
 }
-
-interface RawFile {
-  version?: number;
-  roots: Partial<Record<RootKey, RawNode>>;
-}
+const RawNodeSchema: z.ZodType<RawNode> = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    guid: z.string(),
+    name: z.string().optional(),
+    type: z.enum(["url", "folder"]),
+    url: z.string().optional(),
+    date_added: z.string().optional(),
+    date_modified: z.string().optional(),
+    children: z.array(RawNodeSchema).optional(),
+  }),
+);
+const RawFileSchema = z.object({
+  version: z.number().optional(),
+  roots: z.object({
+    bookmark_bar: RawNodeSchema.optional(),
+    other: RawNodeSchema.optional(),
+    synced: RawNodeSchema.optional(),
+  }),
+});
 
 /** Abstraction over "where does the tree come from" so tools/tests can inject a fake. */
 export interface BookmarksSource {
@@ -57,15 +74,21 @@ function toNode(raw: RawNode, parentId: string | undefined, index: number): Book
 
 /** Parse the JSON text of a `Bookmarks` file into the domain tree. Exported for fixture tests. */
 export function parseBookmarksJson(text: string): BookmarkTree {
-  let raw: RawFile;
+  let json: unknown;
   try {
-    raw = JSON.parse(text) as RawFile;
+    json = JSON.parse(text);
   } catch {
     throw new BookmarksFileError("Bookmarks file is not valid JSON", "malformed");
   }
-  if (!raw || typeof raw !== "object" || !raw.roots) {
-    throw new BookmarksFileError("Bookmarks file has no `roots` object", "malformed");
+  const parsed = RawFileSchema.safeParse(json);
+  if (!parsed.success) {
+    const first = parsed.error.issues[0];
+    throw new BookmarksFileError(
+      `Bookmarks file has an unexpected shape at ${first?.path.join(".") || "root"}: ${first?.message ?? "invalid"}`,
+      "malformed",
+    );
   }
+  const raw = parsed.data;
   const roots = {} as Record<RootKey, BookmarkNode>;
   for (const key of ROOT_KEYS) {
     const r = raw.roots[key];

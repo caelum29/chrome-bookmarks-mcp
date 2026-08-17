@@ -11,3 +11,6 @@ Tier: **unresolved**. Path is always OQ → ADR → issue, never a shortcut. Num
 - **OQ-5** History DB on Windows/Linux paths and locking behaviour — macOS only until proven otherwise.
 - **OQ-6** Dead-link probing is open-world network activity from the user's machine; opt-in flag name and
   rate limits. → ADR when the tool is planned.
+- **OQ-7** ADR-0004 row "`test_map.md` + `InstructionsLoaded` audit hook" — trigger (>2 rules files) fired on day 0.
+  Adopt (issue) or raise the threshold via a superseding ADR? Decision is Artem's; until then this line is
+  the record that the trigger fired.

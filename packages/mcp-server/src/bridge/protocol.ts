@@ -1,8 +1,13 @@
 // Bridge wire contract (server ⇄ extension). Minimal envelope over WebSocket; the server owns
-// validation, the extension only dispatches. New messages: docs/blessed-paths/add-bridge-message.md.
+// validation (zod at this boundary), the extension only dispatches.
+// New messages: docs/blessed-paths/add-bridge-message.md.
+import { z } from "zod";
 
 /** Methods the extension implements. Extend the union when adding a bridge message. */
 export type BridgeMethod = "ping";
+
+/** Default localhost port; the extension falls back to it when nothing is configured. */
+export const DEFAULT_WS_PORT = 48765;
 
 export interface BridgeRequest<M extends BridgeMethod = BridgeMethod> {
   id: string;
@@ -10,21 +15,26 @@ export interface BridgeRequest<M extends BridgeMethod = BridgeMethod> {
   params?: Record<string, unknown>;
 }
 
-export interface BridgeResponse {
-  id: string;
-  result?: unknown;
-  error?: { message: string };
-}
+/** Frame the extension sends back — validated before use. */
+export const BridgeResponseSchema = z.object({
+  id: z.string().min(1),
+  result: z.unknown().optional(),
+  error: z.object({ message: z.string() }).optional(),
+});
+export type BridgeResponse = z.infer<typeof BridgeResponseSchema>;
 
 /** Result of `ping`: extension identity + which browser it runs in. */
-export interface PingResult {
-  ok: true;
-  extensionVersion: string;
-  userAgent?: string;
-}
+export const PingResultSchema = z.object({
+  ok: z.literal(true),
+  extensionVersion: z.string(),
+  userAgent: z.string().optional(),
+});
+export type PingResult = z.infer<typeof PingResultSchema>;
 
 /** What tools see: connection state + typed request. Fakes in tests implement this. */
 export interface BridgeClient {
+  /** False when the server could not bind its port — the extension can never connect. */
+  readonly listening: boolean;
   readonly connected: boolean;
   /** Send a request; rejects with `BridgeError` when disconnected or timed out. */
   request<T = unknown>(method: BridgeMethod, params?: Record<string, unknown>): Promise<T>;
@@ -33,7 +43,7 @@ export interface BridgeClient {
 export class BridgeError extends Error {
   constructor(
     message: string,
-    readonly code: "disconnected" | "timeout" | "remote",
+    readonly code: "disconnected" | "timeout" | "remote" | "malformed",
   ) {
     super(message);
     this.name = "BridgeError";

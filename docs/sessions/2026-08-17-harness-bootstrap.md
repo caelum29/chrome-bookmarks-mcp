@@ -33,9 +33,24 @@ Rule of this file: no progress claim without a tool result. Exit codes are from 
 - SDK v1.x line kept; v2/2026-07-28 deferred behind the seam (ADR-0001, OQ-4).
 - Release pipeline / skill / worktrees / evals deferred with triggers (ADR-0004).
 
-## Not done (milestone 0001 remaining)
-- DoD 3 (bridge `connected` with a real loaded extension) — implemented, **not** manually verified in
-  Chrome this session. Do: `make ext` → load unpacked → `bookmarks_status`.
-- Verifier subagent run against milestone DoD before the PR is marked ready.
-- Nothing committed yet — split suggested: `docs:` (trust hierarchy) · `chore(harness):` ·
-  `feat(server):` skeleton · `feat(extension):` bridge client.
+## Later the same day
+- Committed on `feat/harness-bootstrap`: `eaf175b` docs · `d3e03ca` harness · `c148e2e` server ·
+  `e3a8656` extension · `f56db08` make verify.
+- **DoD 3 verified**: extension loaded unpacked in Chrome → `bookmarks_status` → `bridge: connected (v0.1.0)`
+  (poll script, server stderr `bridge: extension connected`).
+- `/code-review` (Standards + Spec, two fresh-context agents) → fixes committed after review:
+  zod validation of bridge frames (`BridgeResponseSchema`) and of the raw Bookmarks file (`RawFileSchema`);
+  `BOOKMARKS_LOG_LEVEL` / `BOOKMARKS_BRIDGE_TIMEOUT_MS` validated in `loadConfig`; new bridge state
+  `unavailable` (port never bound) + `BridgeClient.listening`; remote ping error = connected-but-failing;
+  extension port configurable via `chrome.storage.local.wsPort` (+ `storage` permission), status warns on
+  mismatch; `bookmarks_tree` description no longer names a future tool, `roots` typed one level;
+  CONTEXT.md +outline/bridge state/source; blessed paths fixed; README reads claim corrected;
+  `unixMsToWebkit` removed (unused); hook commands via `$CLAUDE_PROJECT_DIR`; test file headers.
+  `pnpm verify` → 0 (35 tests).
+- ADR-0004 trigger "**>2 files in `.claude/rules/`**" fired at birth (3 files) → issue to open
+  (`test_map.md` + `InstructionsLoaded` audit hook); GitHub API was 503 at the time — see OQ-7 if the
+  issue is still missing.
+
+## Not done
+- PR not opened yet (DoD 4 needs CI on the PR).
+- Verifier subagent against milestone DoD — run before marking the PR ready.

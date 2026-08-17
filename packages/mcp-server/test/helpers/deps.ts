@@ -24,6 +24,7 @@ export function fakeConfig(over: Partial<Config> = {}): Config {
     bookmarksFile: "/fake/Bookmarks",
     snapshotDir: "/fake/snapshots",
     bridgeTimeoutMs: 100,
+    logLevel: "info",
     ...over,
   };
 }
@@ -43,9 +44,11 @@ export function fakeFile(opts: { exists?: boolean; error?: Error } = {}): Bookma
 export function fakeBridge(
   connected: boolean,
   responses: Partial<Record<BridgeMethod, unknown | Error>> = {},
+  listening = true,
 ): BridgeClient & { calls: BridgeMethod[] } {
   const calls: BridgeMethod[] = [];
   return {
+    listening,
     connected,
     calls,
     async request<T>(method: BridgeMethod): Promise<T> {

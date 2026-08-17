@@ -1,5 +1,7 @@
 // Structured stderr logger. stdout is the MCP stream — nothing else may write there.
-export type LogLevel = "debug" | "info" | "warn" | "error";
+import type { LogLevel } from "./config.js";
+
+export type { LogLevel };
 
 export interface Logger {
   debug(msg: string, data?: Record<string, unknown>): void;

@@ -38,9 +38,15 @@ _Avoid_: uuid, key.
 
 **Bridge**: MV3 service worker holding a WebSocket to `127.0.0.1:<wsPort>`; the only write path; preferred read path when connected.
 
+**Bridge state** (as reported by `bookmarks_status`): `connected` (ping round-trip ok) · `disconnected` (server listens, no extension) · `unresponsive` (extension attached but did not answer in time) · `unavailable` (server could not bind the port — the extension can never connect).
+
+**Source**: where a read tool got its data — `file` (Bookmarks file) or `bridge` (live). Every read result names its source.
+
 ## 3. Operations
 
 **Read tool**: `readOnlyHint: true`; works with either source; never mutates.
+
+**Outline**: the depth-limited folder-only view of the tree with per-folder counts (`bookmarkCount`, `folderCount`, `totalBookmarks`) — what `bookmarks_tree` returns. No URLs.
 
 **Write tool**: mutates live bookmarks through the bridge. Every write tool: (a) is disabled unless `BOOKMARKS_ENABLE_WRITE` is set, (b) defaults to `dryRun: true`, (c) auto-snapshots before applying.
 

@@ -12,7 +12,7 @@ The one canonical way to add a tool. Deviations need an ADR. Pointers, not copie
    - `outputSchema` + return `structuredContent` and a self-sufficient text block.
    - `annotations`: all four hints. Read tools: `readOnlyHint: true`.
    - Write tools additionally: `write: true`, `dryRun: CoercedBool().default(true)`, bounded set,
-     snapshot via `deps.snapshots.take()` before applying, roots rejected. Dry run → `toolOk`.
+     snapshot before applying via the snapshots dep (lands with milestone 0003 — until then no write tool may exist), roots rejected. Dry run → `toolOk`.
    - `handler(args, deps)`: return `toolOk`/`toolError` from `src/tools/result.ts`; never throw for
      expected conditions; never construct deps inside.
 3. **Register** — one import + one array entry in `src/tools/registry.ts`.

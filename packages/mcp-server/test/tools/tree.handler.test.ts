@@ -1,3 +1,4 @@
+// bookmarks_tree handler: outline shape, coerced args, agent-actionable errors — SDK-free.
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { BookmarksFileError } from "../../src/chrome/bookmarks-file.js";

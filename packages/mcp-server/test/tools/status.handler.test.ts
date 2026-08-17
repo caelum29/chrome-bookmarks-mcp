@@ -1,3 +1,4 @@
+// bookmarks_status handler: bridge states, file presence, write gate — SDK-free with fake deps.
 import { describe, expect, it } from "vitest";
 import { BridgeError } from "../../src/bridge/protocol.js";
 import { bookmarksStatus } from "../../src/tools/bookmarks_status.js";
@@ -29,6 +30,24 @@ describe("bookmarks_status", () => {
     const r = await bookmarksStatus.handler({}, deps({ bridge }));
     expect(r.isError).toBeUndefined();
     expect(r.structuredContent).toMatchObject({ bridge: "unresponsive" });
+  });
+
+  it("reports 'unavailable' with a port hint when the server never bound its port", async () => {
+    const r = await bookmarksStatus.handler({}, deps({ bridge: fakeBridge(false, {}, false) }));
+    expect(r.structuredContent).toMatchObject({ bridge: "unavailable" });
+    expect(r.content[0]?.text).toContain("could not bind port");
+  });
+
+  it("treats a remote ping error as connected-but-failing, not unresponsive", async () => {
+    const bridge = fakeBridge(true, { ping: new BridgeError("boom", "remote") });
+    const r = await bookmarksStatus.handler({}, deps({ bridge }));
+    expect(r.structuredContent).toMatchObject({ bridge: "connected" });
+    expect(r.content[0]?.text).toContain("ping error: boom");
+  });
+
+  it("warns about the extension's default port when the server uses another", async () => {
+    const r = await bookmarksStatus.handler({}, deps({ config: fakeConfig({ wsPort: 50000 }) }));
+    expect(r.content[0]?.text).toContain("connects to 48765");
   });
 
   it("tells the agent how to fix a missing Bookmarks file", async () => {

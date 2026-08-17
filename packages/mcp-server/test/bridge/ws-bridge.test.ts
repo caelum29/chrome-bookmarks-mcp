@@ -32,6 +32,7 @@ function fakeExtension(port: number, opts: { answer?: boolean } = {}): Promise<W
 describe("ws bridge", () => {
   it("rejects requests while no extension is connected", async () => {
     bridge = await startWsBridge({ port: 0, timeoutMs: 200, log: silentLogger });
+    expect(bridge.listening).toBe(true);
     expect(bridge.connected).toBe(false);
     await expect(bridge.request("ping")).rejects.toMatchObject({ code: "disconnected" });
   });
@@ -53,6 +54,19 @@ describe("ws bridge", () => {
     expect(err).toBeInstanceOf(BridgeError);
     expect((err as BridgeError).code).toBe("timeout");
     ext.close();
+  });
+
+  it("ignores malformed frames and still times out cleanly", async () => {
+    bridge = await startWsBridge({ port: 0, timeoutMs: 80, log: silentLogger });
+    const ws = new WebSocket(`ws://127.0.0.1:${bridge.port}`);
+    await new Promise((r) => ws.on("open", r));
+    ws.on("message", () => {
+      ws.send("not json");
+      ws.send(JSON.stringify({ id: 42, result: "wrong id type" }));
+    });
+    await new Promise((r) => setTimeout(r, 20));
+    await expect(bridge.request("ping")).rejects.toMatchObject({ code: "timeout" });
+    ws.close();
   });
 
   it("fails pending requests when the extension disconnects", async () => {
