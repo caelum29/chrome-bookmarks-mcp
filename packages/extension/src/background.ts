@@ -3,7 +3,9 @@
 // no state that must survive; reconnect on wake; keepalive via chrome.alarms.
 // Port must match the server's BOOKMARKS_WS_PORT; override via chrome.storage.local { wsPort }.
 const DEFAULT_WS_PORT = 48765;
-const RECONNECT_MS = 3000;
+// Reconnect with backoff: the MCP server is often not running (Chrome logs every refused attempt).
+const RECONNECT_MIN_MS = 3000;
+const RECONNECT_MAX_MS = 60_000;
 const KEEPALIVE_ALARM = "bookmarks-bridge-keepalive";
 
 interface BridgeRequest {
@@ -19,6 +21,7 @@ interface BridgeResponse {
 
 let socket: WebSocket | undefined;
 let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+let reconnectDelay = RECONNECT_MIN_MS;
 
 /** One case per bridge method — add via docs/blessed-paths/add-bridge-message.md. */
 async function dispatch(req: BridgeRequest): Promise<unknown> {
@@ -52,7 +55,10 @@ async function connect(): Promise<void> {
   const url = await wsUrl();
   const ws = new WebSocket(url);
   socket = ws;
-  ws.onopen = () => console.log(`[bookmarks-bridge] connected to ${url}`);
+  ws.onopen = () => {
+    reconnectDelay = RECONNECT_MIN_MS;
+    console.log(`[bookmarks-bridge] connected to ${url}`);
+  };
   ws.onmessage = async (ev) => {
     let req: BridgeRequest;
     try {
@@ -83,7 +89,8 @@ function scheduleReconnect(): void {
   reconnectTimer = setTimeout(() => {
     reconnectTimer = undefined;
     void connect();
-  }, RECONNECT_MS);
+  }, reconnectDelay);
+  reconnectDelay = Math.min(reconnectDelay * 2, RECONNECT_MAX_MS);
 }
 
 // keepalive: an alarm wakes the worker so the socket is re-established after Chrome suspends it
