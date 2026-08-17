@@ -1,5 +1,6 @@
-# Typecheck + unit tests for both workspace packages on every push/PR.
-name: CI
+# One verification standard everywhere: `pnpm verify` (typecheck + lint + test) — same command the
+# agent, the Stop hook and CI run. Build proves both packages still bundle.
+name: verify
 
 on:
   push:
@@ -7,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -15,9 +16,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
-      - run: pnpm test
+      - run: pnpm verify
       - run: pnpm build
