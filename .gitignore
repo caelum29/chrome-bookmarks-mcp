@@ -21,8 +21,7 @@ docs/dev/
 
 # editor / OS
 .DS_Store
-.idea/*
-!.idea/.gitignore
+.idea/
 
 # logs
 *.log
