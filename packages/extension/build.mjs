@@ -1,6 +1,7 @@
 // Bundle the service worker with esbuild and copy manifest → dist/ (loadable unpacked).
-import { build } from "esbuild";
+
 import { cpSync, mkdirSync } from "node:fs";
+import { build } from "esbuild";
 
 mkdirSync("dist", { recursive: true });
 await build({
